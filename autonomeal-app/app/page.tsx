@@ -8,8 +8,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { ChefHat, Brain, Utensils, CheckCircle, Lock, Sparkles, Star, ArrowRight, X } from "lucide-react"
+import Dashboard from "@/components/dashboard"
 
 export default function AutonoMealApp() {
+  const [mounted, setMounted] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authMode, setAuthMode] = useState<"login" | "register">("login")
@@ -21,20 +23,26 @@ export default function AutonoMealApp() {
   const cursorRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY })
     }
 
     window.addEventListener("mousemove", handleMouseMove)
     return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
+  }, [mounted])
 
   useEffect(() => {
-    if (cursorRef.current) {
-      cursorRef.current.style.left = `${mousePosition.x}px`
-      cursorRef.current.style.top = `${mousePosition.y}px`
-    }
-  }, [mousePosition])
+    if (!mounted || !cursorRef.current) return
+
+    cursorRef.current.style.left = `${mousePosition.x}px`
+    cursorRef.current.style.top = `${mousePosition.y}px`
+  }, [mousePosition, mounted])
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -74,11 +82,73 @@ export default function AutonoMealApp() {
   }
 
   useEffect(() => {
+    if (!mounted) return
+
     const user = localStorage.getItem("user")
     if (user) {
       setIsAuthenticated(true)
     }
-  }, [])
+  }, [mounted])
+
+  if (isAuthenticated) {
+    return <Dashboard onLogout={handleLogout} />
+  }
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 relative overflow-hidden">
+        <header className="border-b border-white/20 backdrop-blur-sm bg-white/80 relative z-10">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 group hover:scale-105 transition-all duration-300">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+                  <ChefHat className="w-6 h-6 text-white group-hover:rotate-12 transition-transform duration-300" />
+                </div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  autonoMeal
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 hover:scale-105"
+                >
+                  Sign In
+                </Button>
+                <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                  Get Started
+                </Button>
+              </div>
+            </div>
+          </div>
+        </header>
+        <main className="max-w-7xl mx-auto px-4 py-16 relative z-10">
+          {/* Hero Section */}
+          <div className="text-center mb-16">
+            <div className="flex items-center justify-center gap-3 mb-6 group hover:scale-110 transition-all duration-500">
+              <div className="relative">
+                <ChefHat className="w-16 h-16 text-gray-800 group-hover:rotate-12 transition-transform duration-500" />
+                <Sparkles className="w-6 h-6 text-blue-500 absolute -top-1 -right-1 animate-pulse group-hover:animate-spin" />
+              </div>
+              <h1 className="text-6xl font-bold">
+                <span className="text-gray-800 group-hover:text-blue-600 transition-colors duration-500">autono</span>
+                <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Meal</span>
+              </h1>
+            </div>
+
+            <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-800 to-blue-600 bg-clip-text text-transparent mb-6 hover:scale-105 transition-transform duration-300">
+              Every meal, a step toward independence
+            </h2>
+
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed hover:text-gray-800 transition-colors duration-300">
+              AI-powered recipe recommendations that adapt to your skill level, available ingredients, and culinary
+              preferences
+            </p>
+          </div>
+        </main>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 relative overflow-hidden">
