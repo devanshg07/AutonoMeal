@@ -1,0 +1,9 @@
+/flask_session
+/__pycache__
+users.db
+<<<<<<< HEAD
+.env
+venv/
+=======
+.env
+>>>>>>> c50ae28 (testing for github collab)
