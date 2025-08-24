@@ -152,7 +152,7 @@ export default function Dashboard({ onLogout }: { onLogout?: () => void }) {
     "2023-12-15": 1,
   })
 
-  const [activeTab, setActiveTab] = useState("recommendations")
+  const [activeTab, setActiveTab] = useState("preferences")
   const [newIngredient, setNewIngredient] = useState("")
   const [newRestriction, setNewRestriction] = useState("")
   const [newCookingExperience, setNewCookingExperience] = useState("")
@@ -491,19 +491,146 @@ export default function Dashboard({ onLogout }: { onLogout?: () => void }) {
         {/* Main Dashboard Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-4 bg-white/60 backdrop-blur-sm border border-white/30">
+            <TabsTrigger value="preferences" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              My Preferences
+            </TabsTrigger>
             <TabsTrigger value="recommendations" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
               AI Recommendations
             </TabsTrigger>
             <TabsTrigger value="favorites" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
               Favorites
             </TabsTrigger>
-            <TabsTrigger value="preferences" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              My Preferences
-            </TabsTrigger>
             <TabsTrigger value="progress" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
               Cooking Journey
             </TabsTrigger>
           </TabsList>
+
+          {/* Preferences Tab */}
+          <TabsContent value="preferences" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Missing Ingredients */}
+              <Card className="bg-white/80 backdrop-blur-sm border border-white/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-red-500" />
+                    Missing Ingredients
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Add ingredient you don't have..."
+                      value={newIngredient}
+                      onChange={(e) => setNewIngredient(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && addMissingIngredient()}
+                    />
+                    <Button onClick={addMissingIngredient} size="sm">
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {userProfile.preferences.missingIngredients.map((ingredient) => (
+                      <Badge
+                        key={ingredient}
+                        variant="destructive"
+                        className="cursor-pointer hover:bg-red-600"
+                        onClick={() => removeMissingIngredient(ingredient)}
+                      >
+                        {ingredient} <X className="w-3 h-3 ml-1" />
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Dietary Restrictions */}
+              <Card className="bg-white/80 backdrop-blur-sm border border-white/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    Dietary Restrictions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Add dietary restriction..."
+                      value={newRestriction}
+                      onChange={(e) => setNewRestriction(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && addDietaryRestriction()}
+                    />
+                    <Button onClick={addDietaryRestriction} size="sm">
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {userProfile.preferences.restrictions.map((restriction) => (
+                      <Badge
+                        key={restriction}
+                        className="cursor-pointer bg-green-100 text-green-800 hover:bg-green-200"
+                        onClick={() => removeDietaryRestriction(restriction)}
+                      >
+                        {restriction} <X className="w-3 h-3 ml-1" />
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Food Preferences */}
+              <Card className="bg-white/80 backdrop-blur-sm border border-white/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-purple-500" />
+                    Favorite Cuisines
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {userProfile.preferences.cuisines.map((cuisine) => (
+                      <Badge key={cuisine} className="bg-purple-100 text-purple-800">
+                        {cuisine}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Experience Management */}
+              <Card className="bg-white/80 backdrop-blur-sm border border-white/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-yellow-500" />
+                    Experience Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="What have you cooked before?"
+                      value={newCookingExperience}
+                      onChange={(e) => setNewCookingExperience(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && addCookingExperience()}
+                    />
+                    <Button onClick={addCookingExperience} size="sm">
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {userProfile.preferences.cookingExperience.map((experience) => (
+                      <Badge
+                        key={experience}
+                        className="bg-yellow-100 text-yellow-800 cursor-pointer hover:bg-yellow-200"
+                        onClick={() => removeCookingExperience(experience)}
+                      >
+                        {experience} <X className="w-3 h-3 ml-1" />
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
           {/* AI Recommendations Tab */}
           <TabsContent value="recommendations" className="space-y-6">
@@ -666,133 +793,6 @@ export default function Dashboard({ onLogout }: { onLogout?: () => void }) {
                 ))}
               </div>
             )}
-          </TabsContent>
-
-          {/* Preferences Tab */}
-          <TabsContent value="preferences" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Missing Ingredients */}
-              <Card className="bg-white/80 backdrop-blur-sm border border-white/30">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <X className="w-5 h-5 text-red-500" />
-                    Missing Ingredients
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Add ingredient you don't have..."
-                      value={newIngredient}
-                      onChange={(e) => setNewIngredient(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && addMissingIngredient()}
-                    />
-                    <Button onClick={addMissingIngredient} size="sm">
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {userProfile.preferences.missingIngredients.map((ingredient) => (
-                      <Badge
-                        key={ingredient}
-                        variant="destructive"
-                        className="cursor-pointer hover:bg-red-600"
-                        onClick={() => removeMissingIngredient(ingredient)}
-                      >
-                        {ingredient} <X className="w-3 h-3 ml-1" />
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Dietary Restrictions */}
-              <Card className="bg-white/80 backdrop-blur-sm border border-white/30">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    Dietary Restrictions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Add dietary restriction..."
-                      value={newRestriction}
-                      onChange={(e) => setNewRestriction(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && addDietaryRestriction()}
-                    />
-                    <Button onClick={addDietaryRestriction} size="sm">
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {userProfile.preferences.restrictions.map((restriction) => (
-                      <Badge
-                        key={restriction}
-                        className="cursor-pointer bg-green-100 text-green-800 hover:bg-green-200"
-                        onClick={() => removeDietaryRestriction(restriction)}
-                      >
-                        {restriction} <X className="w-3 h-3 ml-1" />
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Food Preferences */}
-              <Card className="bg-white/80 backdrop-blur-sm border border-white/30">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-purple-500" />
-                    Favorite Cuisines
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {userProfile.preferences.cuisines.map((cuisine) => (
-                      <Badge key={cuisine} className="bg-purple-100 text-purple-800">
-                        {cuisine}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Experience Management */}
-              <Card className="bg-white/80 backdrop-blur-sm border border-white/30">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-yellow-500" />
-                    Experience Management
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="What have you cooked before?"
-                      value={newCookingExperience}
-                      onChange={(e) => setNewCookingExperience(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && addCookingExperience()}
-                    />
-                    <Button onClick={addCookingExperience} size="sm">
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {userProfile.preferences.cookingExperience.map((experience) => (
-                      <Badge
-                        key={experience}
-                        className="bg-yellow-100 text-yellow-800 cursor-pointer hover:bg-yellow-200"
-                        onClick={() => removeCookingExperience(experience)}
-                      >
-                        {experience} <X className="w-3 h-3 ml-1" />
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
           </TabsContent>
 
           {/* Progress Tab */}
