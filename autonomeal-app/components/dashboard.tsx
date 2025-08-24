@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { JSX, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -53,6 +53,7 @@ interface UserProfile {
     cuisines: string[]
     restrictions: string[]
     missingIngredients: string[]
+    cookingExperience: string[]
   }
 }
 
@@ -67,6 +68,7 @@ export default function Dashboard({ onLogout }: { onLogout?: () => void }) {
       cuisines: ["Italian", "Asian", "Mediterranean"],
       restrictions: ["Vegetarian"],
       missingIngredients: ["Onions", "Garlic", "Heavy Cream"],
+      cookingExperience: ["Pasta", "Stir Fry", "Baking"],
     },
   })
 
@@ -153,6 +155,7 @@ export default function Dashboard({ onLogout }: { onLogout?: () => void }) {
   const [activeTab, setActiveTab] = useState("recommendations")
   const [newIngredient, setNewIngredient] = useState("")
   const [newRestriction, setNewRestriction] = useState("")
+  const [newCookingExperience, setNewCookingExperience] = useState("")
   const [showCookingInterface, setShowCookingInterface] = useState(false)
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
 
@@ -216,6 +219,29 @@ export default function Dashboard({ onLogout }: { onLogout?: () => void }) {
     }))
   }
 
+  const addCookingExperience = () => {
+    if (newCookingExperience.trim()) {
+      setUserProfile((prev) => ({
+        ...prev,
+        preferences: {
+          ...prev.preferences,
+          cookingExperience: [...prev.preferences.cookingExperience, newCookingExperience.trim()],
+        },
+      }))
+      setNewCookingExperience("")
+    }
+  }
+
+  const removeCookingExperience = (experience: string) => {
+    setUserProfile((prev) => ({
+      ...prev,
+      preferences: {
+        ...prev.preferences,
+        cookingExperience: prev.preferences.cookingExperience.filter((item) => item !== experience),
+      },
+    }))
+  }
+
   const toggleFavorite = (recipe: Recipe) => {
     setFavoriteRecipes((prev) => {
       const isFavorite = prev.some((fav) => fav.id === recipe.id)
@@ -234,7 +260,7 @@ export default function Dashboard({ onLogout }: { onLogout?: () => void }) {
   const CookingCalendar = () => {
     const today = new Date()
     const startDate = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate())
-    const weeks = []
+    const weeks: JSX.Element[] = []
     const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
     for (let week = 0; week < 52; week++) {
@@ -325,9 +351,6 @@ export default function Dashboard({ onLogout }: { onLogout?: () => void }) {
       </div>
     )
   }
-
-  const experienceToNextLevel = 1000 - (userProfile.experience % 1000)
-  const levelProgress = (userProfile.experience % 1000) / 10
 
   const handleBackToDashboard = () => {
     setShowCookingInterface(false)
@@ -424,16 +447,16 @@ export default function Dashboard({ onLogout }: { onLogout?: () => void }) {
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold">{userProfile.experience} XP</div>
-                  <div className="text-blue-100">{experienceToNextLevel} XP to next level</div>
+                  <div className="text-blue-100">1000 XP to next level</div>
                 </div>
               </div>
 
               <div className="mb-6">
                 <div className="flex justify-between text-sm mb-2">
                   <span>Progress to Level {userProfile.level + 1}</span>
-                  <span>{levelProgress}%</span>
+                  <span>{userProfile.experience % 1000}%</span>
                 </div>
-                <Progress value={levelProgress} className="h-3 bg-white/20" />
+                <Progress value={userProfile.experience % 1000} className="h-3 bg-white/20" />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -717,8 +740,8 @@ export default function Dashboard({ onLogout }: { onLogout?: () => void }) {
                 </CardContent>
               </Card>
 
-              {/* Cuisine Preferences */}
-              <Card className="bg-white/80 backdrop-blur-sm border border-white/30 lg:col-span-2">
+              {/* Food Preferences */}
+              <Card className="bg-white/80 backdrop-blur-sm border border-white/30">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-purple-500" />
@@ -730,6 +753,40 @@ export default function Dashboard({ onLogout }: { onLogout?: () => void }) {
                     {userProfile.preferences.cuisines.map((cuisine) => (
                       <Badge key={cuisine} className="bg-purple-100 text-purple-800">
                         {cuisine}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Experience Management */}
+              <Card className="bg-white/80 backdrop-blur-sm border border-white/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-yellow-500" />
+                    Experience Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="What have you cooked before?"
+                      value={newCookingExperience}
+                      onChange={(e) => setNewCookingExperience(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && addCookingExperience()}
+                    />
+                    <Button onClick={addCookingExperience} size="sm">
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {userProfile.preferences.cookingExperience.map((experience) => (
+                      <Badge
+                        key={experience}
+                        className="bg-yellow-100 text-yellow-800 cursor-pointer hover:bg-yellow-200"
+                        onClick={() => removeCookingExperience(experience)}
+                      >
+                        {experience} <X className="w-3 h-3 ml-1" />
                       </Badge>
                     ))}
                   </div>

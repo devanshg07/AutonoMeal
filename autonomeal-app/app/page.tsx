@@ -427,72 +427,72 @@ export default function AutonoMealApp() {
         </div>
       </main>
 
-      {showAuthModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-md bg-white/95 backdrop-blur-xl border-0 shadow-2xl">
-            <CardContent className="p-8">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  {authMode === "login" ? "Welcome Back" : "Join autonoMeal"}
-                </h2>
-                <Button variant="ghost" size="sm" onClick={() => setShowAuthModal(false)} className="hover:bg-gray-100">
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
+             {showAuthModal && (
+         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+           <Card className="w-full max-w-md bg-white border-0 shadow-2xl">
+             <CardContent className="p-8">
+               <div className="flex items-center justify-between mb-6">
+                 <h2 className="text-2xl font-bold text-black">
+                   {authMode === "login" ? "Welcome Back" : "Join autonoMeal"}
+                 </h2>
+                 <Button variant="ghost" size="sm" onClick={() => setShowAuthModal(false)} className="hover:bg-gray-100">
+                   <X className="w-4 h-4 text-black" />
+                 </Button>
+               </div>
 
-              <form onSubmit={handleAuth} className="space-y-4">
-                <div>
-                  <Input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                    minLength={4}
-                    maxLength={20}
-                    className="w-full py-3"
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={8}
-                    maxLength={20}
-                    className="w-full py-3"
-                  />
-                </div>
+               <form onSubmit={handleAuth} className="space-y-4">
+                                  <div>
+                   <Input
+                     type="text"
+                     placeholder="Username"
+                     value={username}
+                     onChange={(e) => setUsername(e.target.value)}
+                     required
+                     minLength={4}
+                     maxLength={20}
+                     className="w-full py-3 text-black placeholder-gray-500 bg-white/90 rounded-md"
+                   />
+                 </div>
+                 <div>
+                   <Input
+                     type="password"
+                     placeholder="Password"
+                     value={password}
+                     onChange={(e) => setPassword(e.target.value)}
+                     required
+                     minLength={8}
+                     maxLength={20}
+                     className="w-full py-3 text-black placeholder-gray-500 bg-white/90 rounded-md"
+                   />
+                 </div>
 
-                {error && <div className="text-red-500 text-sm bg-red-50 p-3 rounded-lg">{error}</div>}
+                 {error && <div className="text-red-500 text-sm bg-red-50 p-3 rounded-lg">{error}</div>}
 
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3"
-                >
-                  {loading ? "Please wait..." : authMode === "login" ? "Sign In" : "Create Account"}
-                </Button>
-              </form>
+                 <Button
+                   type="submit"
+                   disabled={loading}
+                   className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3"
+                 >
+                   {loading ? "Please wait..." : authMode === "login" ? "Sign In" : "Create Account"}
+                 </Button>
+               </form>
 
-              <div className="mt-6 text-center">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAuthMode(authMode === "login" ? "register" : "login")
-                    setError("")
-                  }}
-                  className="text-blue-600 hover:text-purple-600 transition-colors duration-300"
-                >
-                  {authMode === "login" ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-                </button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+               <div className="mt-6 text-center">
+                 <button
+                   type="button"
+                   onClick={() => {
+                     setAuthMode(authMode === "login" ? "register" : "login")
+                     setError("")
+                   }}
+                   className="text-blue-600 hover:text-purple-600 transition-colors duration-300"
+                 >
+                   {authMode === "login" ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+                 </button>
+               </div>
+             </CardContent>
+           </Card>
+         </div>
+       )}
     </div>
   )
 }

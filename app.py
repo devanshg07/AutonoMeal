@@ -7,7 +7,6 @@ import os
 from datetime import timedelta
 
 app = Flask(__name__)
-print("Starting app.py...")
 
 # Configuration
 app.config['SECRET_KEY'] = 'your-super-secret-key-change-this-in-production'
