@@ -50,7 +50,7 @@ export default function AutonoMealApp() {
     setError("")
 
     try {
-      const response = await fetch(`/api/${authMode}`, {
+      const response = await fetch(`http://localhost:5000/api/${authMode}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,6 +66,7 @@ export default function AutonoMealApp() {
         setUsername("")
         setPassword("")
         localStorage.setItem("user", JSON.stringify(data.user))
+        localStorage.setItem("token", data.token)
       } else {
         setError(data.error || "Authentication failed")
       }
@@ -79,13 +80,15 @@ export default function AutonoMealApp() {
   const handleLogout = () => {
     setIsAuthenticated(false)
     localStorage.removeItem("user")
+    localStorage.removeItem("token")
   }
 
   useEffect(() => {
     if (!mounted) return
 
     const user = localStorage.getItem("user")
-    if (user) {
+    const token = localStorage.getItem("token")
+    if (user && token) {
       setIsAuthenticated(true)
     }
   }, [mounted])
