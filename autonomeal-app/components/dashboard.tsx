@@ -158,6 +158,7 @@ export default function Dashboard({ onLogout }: { onLogout?: () => void }) {
   const [newCookingExperience, setNewCookingExperience] = useState("")
   const [showCookingInterface, setShowCookingInterface] = useState(false)
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
+  const [isGeneratingRecipe, setIsGeneratingRecipe] = useState(false)
 
   const handleAcceptRecipe = (recipeId: string) => {
     const recipe = recommendedRecipes.find((r) => r.id === recipeId)
@@ -378,6 +379,43 @@ export default function Dashboard({ onLogout }: { onLogout?: () => void }) {
   const handleLogout = () => {
     if (onLogout) {
       onLogout()
+    }
+  }
+
+  const generateAIRecipe = async () => {
+    setIsGeneratingRecipe(true)
+    try {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        throw new Error('No authentication token found')
+      }
+
+      const response = await fetch('http://localhost:5000/api/generate-recipe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          preferences: userProfile.preferences
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to generate recipe')
+      }
+
+      const data = await response.json()
+      if (data.success && data.recipe) {
+        setRecommendedRecipes(prev => [data.recipe, ...prev])
+        setActiveTab("recommendations")
+        alert('AI recipe generated successfully! Check the AI Recommendations tab.')
+      }
+    } catch (error) {
+      console.error('Error generating AI recipe:', error)
+      alert('Failed to generate AI recipe. Please try again.')
+    } finally {
+      setIsGeneratingRecipe(false)
     }
   }
 
@@ -638,9 +676,26 @@ export default function Dashboard({ onLogout }: { onLogout?: () => void }) {
               <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-blue-600 bg-clip-text text-transparent mb-4">
                 Your Perfect Recipe Matches
               </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
+              <p className="text-gray-600 max-w-2xl mx-auto mb-6">
                 Based on your preferences and cooking level, here are personalized recipes just for you
               </p>
+              <Button 
+                onClick={generateAIRecipe} 
+                disabled={isGeneratingRecipe}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+              >
+                {isGeneratingRecipe ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Generating Recipe...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Generate AI Recipe
+                  </>
+                )}
+              </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
